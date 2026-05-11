@@ -1,25 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { cloudinary } from "@/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  if (
+    !process.env.CLOUDINARY_CLOUD_NAME ||
+    !process.env.CLOUDINARY_API_KEY ||
+    !process.env.CLOUDINARY_API_SECRET
+  ) {
+    return NextResponse.json({ error: "Cloudinary not configured" }, { status: 503 });
+  }
+
   const { image } = await req.json();
   if (!image) return NextResponse.json({ error: "No image" }, { status: 400 });
 
-  const matches = (image as string).match(/^data:image\/(\w+);base64,(.+)$/);
-  if (!matches) return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
+  if (!image.startsWith("data:image/")) {
+    return NextResponse.json({ error: "Invalid image format" }, { status: 400 });
+  }
 
-  const ext = matches[1] === "jpeg" ? "jpg" : matches[1];
-  const filename = `product-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const result = await cloudinary.uploader.upload(image, {
+    folder: "rafiq-market/products",
+    transformation: [{ width: 800, height: 800, crop: "limit", quality: "auto", fetch_format: "auto" }],
+  });
 
-  const uploadDir = join(process.cwd(), "public", "images", "products");
-  await mkdir(uploadDir, { recursive: true });
-  await writeFile(join(uploadDir, filename), Buffer.from(matches[2], "base64"));
-
-  return NextResponse.json({ url: `/images/products/${filename}` });
+  return NextResponse.json({ url: result.secure_url });
 }
