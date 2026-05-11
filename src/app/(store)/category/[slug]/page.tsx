@@ -10,10 +10,14 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true } });
-  if (!cat) return {};
-  return { title: cat.name };
+  try {
+    const { slug } = await params;
+    const cat = await prisma.category.findUnique({ where: { slug }, select: { name: true } });
+    if (!cat) return {};
+    return { title: cat.name };
+  } catch {
+    return {};
+  }
 }
 
 export default async function CategoryPage({
@@ -23,25 +27,35 @@ export default async function CategoryPage({
 }) {
   const { slug } = await params;
 
-  const category = await prisma.category.findUnique({
-    where: { slug },
-    include: { children: true },
-  });
+  let category: Awaited<ReturnType<typeof prisma.category.findUnique<{ where: { slug: string }; include: { children: true } }>>> | null = null;
+  let products: Awaited<ReturnType<typeof prisma.product.findMany>> = [];
+
+  try {
+    category = await prisma.category.findUnique({
+      where: { slug },
+      include: { children: true },
+    });
+
+    if (!category) notFound();
+
+    products = await prisma.product.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { categoryId: category.id },
+          { category: { parentId: category.id } },
+        ],
+      },
+      orderBy: { rating: "desc" },
+      take: 40,
+      include: { store: { select: { name: true, isVerified: true } } },
+    });
+  } catch (e) {
+    if (!category) notFound();
+    // DB error after category found — show empty products
+  }
 
   if (!category) notFound();
-
-  const products = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      OR: [
-        { categoryId: category.id },
-        { category: { parentId: category.id } },
-      ],
-    },
-    orderBy: { rating: "desc" },
-    take: 40,
-    include: { store: { select: { name: true, isVerified: true } } },
-  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">

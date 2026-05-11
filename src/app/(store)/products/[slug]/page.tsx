@@ -25,10 +25,17 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const product = await prisma.product.findUnique({ where: { slug }, select: { title: true, description: true } });
-  if (!product) return {};
-  return { title: product.title, description: product.description.slice(0, 160) };
+  try {
+    const { slug } = await params;
+    const product = await prisma.product.findUnique({
+      where: { slug },
+      select: { title: true, description: true },
+    });
+    if (!product) return {};
+    return { title: product.title, description: product.description.slice(0, 160) };
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProductDetailPage({
@@ -38,31 +45,48 @@ export default async function ProductDetailPage({
 }) {
   const { slug } = await params;
 
-  const product = await prisma.product.findUnique({
-    where: { slug },
+  let product: Awaited<ReturnType<typeof prisma.product.findUnique<{
+    where: { slug: string };
     include: {
-      category: true,
-      store: { select: { id: true, name: true, logo: true, isVerified: true } },
-      variants: true,
-      reviews: {
-        include: { user: { select: { id: true, name: true, avatar: true } } },
-        orderBy: { createdAt: "desc" },
-        take: 20,
+      category: true;
+      store: { select: { id: true; name: true; logo: true; isVerified: true } };
+      variants: true;
+      reviews: { include: { user: { select: { id: true; name: true; avatar: true } } }; orderBy: { createdAt: "desc" }; take: 20 };
+    };
+  }>>> = null;
+  let related: Awaited<ReturnType<typeof prisma.product.findMany>> = [];
+
+  try {
+    product = await prisma.product.findUnique({
+      where: { slug },
+      include: {
+        category: true,
+        store: { select: { id: true, name: true, logo: true, isVerified: true } },
+        variants: true,
+        reviews: {
+          include: { user: { select: { id: true, name: true, avatar: true } } },
+          orderBy: { createdAt: "desc" },
+          take: 20,
+        },
       },
-    },
-  });
+    });
+
+    if (!product) notFound();
+
+    related = await prisma.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        id: { not: product.id },
+        isActive: true,
+      },
+      take: 4,
+      include: { store: { select: { name: true, isVerified: true } } },
+    });
+  } catch (e) {
+    if (!product) notFound();
+  }
 
   if (!product) notFound();
-
-  const related = await prisma.product.findMany({
-    where: {
-      categoryId: product.categoryId,
-      id: { not: product.id },
-      isActive: true,
-    },
-    take: 4,
-    include: { store: { select: { name: true, isVerified: true } } },
-  });
 
   const discount =
     product.discountPrice && product.price > 0

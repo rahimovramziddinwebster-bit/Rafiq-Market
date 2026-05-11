@@ -83,7 +83,7 @@ export default function CheckoutPage() {
           }),
         });
         const { url } = await res.json();
-        if (url) window.location.href = url;
+        if (url && typeof window !== "undefined") window.location.href = url;
       } else {
         const res = await fetch("/api/orders", {
           method: "POST",

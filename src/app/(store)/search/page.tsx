@@ -32,16 +32,23 @@ export default async function SearchPage({
       }
     : { isActive: true };
 
-  const [products, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      orderBy: { rating: "desc" },
-      skip: (page - 1) * limit,
-      take: limit,
-      include: { store: { select: { name: true, isVerified: true } } },
-    }),
-    prisma.product.count({ where }),
-  ]);
+  let products: Awaited<ReturnType<typeof prisma.product.findMany>> = [];
+  let total = 0;
+
+  try {
+    [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: { rating: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { store: { select: { name: true, isVerified: true } } },
+      }),
+      prisma.product.count({ where }),
+    ]);
+  } catch {
+    // DB unavailable — render empty state
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">

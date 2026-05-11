@@ -46,16 +46,23 @@ async function ProductList({ searchParams }: { searchParams: SearchParams }) {
     : sort === "rating" ? { rating: "desc" as const }
     : { createdAt: "desc" as const };
 
-  const [products, total] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      orderBy,
-      skip: (page - 1) * limit,
-      take: limit,
-      include: { store: { select: { name: true, isVerified: true } } },
-    }),
-    prisma.product.count({ where }),
-  ]);
+  let products: Awaited<ReturnType<typeof prisma.product.findMany>> = [];
+  let total = 0;
+
+  try {
+    [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+        include: { store: { select: { name: true, isVerified: true } } },
+      }),
+      prisma.product.count({ where }),
+    ]);
+  } catch {
+    // DB unavailable — render empty state
+  }
 
   const totalPages = Math.ceil(total / limit);
 
@@ -87,19 +94,19 @@ export default async function ProductsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const categories = await prisma.category.findMany({ orderBy: { name: "asc" } });
+  const categories = await prisma.category
+    .findMany({ orderBy: { name: "asc" } })
+    .catch(() => []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <ProductsBreadcrumb />
 
       <div className="flex gap-6">
-        {/* Sidebar Filters */}
         <aside className="hidden lg:block w-56 shrink-0">
           <ProductFilters categories={categories} searchParams={params} />
         </aside>
 
-        {/* Product Grid */}
         <div className="flex-1 min-w-0">
           <Suspense fallback={<ProductGridSkeleton count={20} />}>
             <ProductList searchParams={params} />
