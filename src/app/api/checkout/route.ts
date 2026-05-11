@@ -5,6 +5,8 @@ import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
+  if (!stripe) return NextResponse.json({ error: "Payment not configured" }, { status: 503 });
+
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
