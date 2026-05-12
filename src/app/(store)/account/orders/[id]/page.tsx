@@ -35,6 +35,7 @@ export default async function OrderDetailPage({
       order={{
         id: order.id,
         status: order.status,
+        paymentStatus: order.paymentStatus,
         totalAmount: order.totalAmount,
         createdAt: order.createdAt,
         paymentId: order.paymentId,

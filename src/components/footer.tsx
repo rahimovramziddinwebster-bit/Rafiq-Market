@@ -39,20 +39,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-3">{t.footer.sellOnRafiq}</h3>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/auth/register" className="hover:text-white transition-colors">{t.footer.becomeSeller}</Link></li>
-              <li><Link href="/seller/dashboard" className="hover:text-white transition-colors">{t.footer.sellerDashboard}</Link></li>
-            </ul>
-            <div className="mt-6">
-              <p className="text-xs text-gray-500 mb-2">{t.footer.downloadApp}</p>
-              <div className="flex gap-2">
-                <div className="px-3 py-2 bg-gray-800 rounded-lg text-xs text-center cursor-pointer hover:bg-gray-700 transition-colors">
-                  App Store
-                </div>
-                <div className="px-3 py-2 bg-gray-800 rounded-lg text-xs text-center cursor-pointer hover:bg-gray-700 transition-colors">
-                  Google Play
-                </div>
+            <h3 className="font-semibold text-white mb-3">{t.footer.downloadApp}</h3>
+            <div className="flex gap-2">
+              <div className="px-3 py-2 bg-gray-800 rounded-lg text-xs text-center cursor-pointer hover:bg-gray-700 transition-colors">
+                App Store
+              </div>
+              <div className="px-3 py-2 bg-gray-800 rounded-lg text-xs text-center cursor-pointer hover:bg-gray-700 transition-colors">
+                Google Play
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutDashboard, Users, Store, Tag, ShoppingBag, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, Package, Tag, ShoppingBag, ChevronRight, UserCheck } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -9,10 +9,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: "/admin/dashboard", icon: LayoutDashboard, label: t.admin.dashboard },
-    { href: "/admin/users", icon: Users, label: t.admin.users },
-    { href: "/admin/stores", icon: Store, label: t.admin.stores },
+    { href: "/admin/products", icon: Package, label: t.admin.productsNav },
     { href: "/admin/categories", icon: Tag, label: t.admin.categories },
     { href: "/admin/orders", icon: ShoppingBag, label: t.admin.allOrders },
+    { href: "/admin/customers", icon: UserCheck, label: t.admin.customers },
+    { href: "/admin/users", icon: Users, label: t.admin.users },
   ];
 
   return (

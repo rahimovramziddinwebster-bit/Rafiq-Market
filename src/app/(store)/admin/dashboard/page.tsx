@@ -11,13 +11,15 @@ export default async function AdminDashboardPage() {
   const user = session?.user as { id?: string; role?: string } | undefined;
   if (!user || user.role !== "ADMIN") redirect("/");
 
-  const [userCount, storeCount, productCount, orderCount, revenue, recentOrders] = await Promise.all([
-    prisma.user.count(),
-    prisma.store.count(),
-    prisma.product.count(),
-    prisma.order.count(),
+  const [totalRevenue, totalCustomers, pendingOrdersCount, unpaidAggregate, recentOrders] = await Promise.all([
     prisma.order.aggregate({
       where: { status: { in: ["PAID", "DELIVERED"] } },
+      _sum: { totalAmount: true },
+    }),
+    prisma.user.count({ where: { role: "BUYER" } }),
+    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.aggregate({
+      where: { paymentStatus: "UNPAID" },
       _sum: { totalAmount: true },
     }),
     prisma.order.findMany({
@@ -29,11 +31,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <AdminDashboardClient
-      userCount={userCount}
-      storeCount={storeCount}
-      productCount={productCount}
-      orderCount={orderCount}
-      totalRevenue={revenue._sum.totalAmount ?? 0}
+      totalRevenue={totalRevenue._sum.totalAmount ?? 0}
+      totalCustomers={totalCustomers}
+      pendingOrdersCount={pendingOrdersCount}
+      unpaidTotal={unpaidAggregate._sum.totalAmount ?? 0}
       recentOrders={recentOrders}
     />
   );

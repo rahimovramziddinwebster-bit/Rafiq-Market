@@ -14,6 +14,12 @@ const statusColors: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-800 border-red-200",
 };
 
+const paymentColors: Record<string, string> = {
+  PAID: "bg-green-100 text-green-800 border-green-200",
+  UNPAID: "bg-red-100 text-red-800 border-red-200",
+  PARTIAL: "bg-orange-100 text-orange-800 border-orange-200",
+};
+
 interface OrderItem {
   id: string;
   product: { id: string; title: string; images: string[]; slug: string };
@@ -22,6 +28,7 @@ interface OrderItem {
 interface Order {
   id: string;
   status: string;
+  paymentStatus: string;
   totalAmount: number;
   createdAt: Date;
   items: OrderItem[];
@@ -54,11 +61,12 @@ export function OrdersClient({ orders }: { orders: Order[] }) {
                       {format(new Date(order.createdAt), "MMMM d, yyyy")}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <span
-                      className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColors[order.status] ?? ""}`}
-                    >
+                  <div className="flex flex-col items-end gap-1.5">
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${statusColors[order.status] ?? ""}`}>
                       {t.orders.statuses[order.status as keyof typeof t.orders.statuses] ?? order.status}
+                    </span>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${paymentColors[order.paymentStatus] ?? ""}`}>
+                      {t.orders.paymentStatuses[order.paymentStatus as keyof typeof t.orders.paymentStatuses] ?? order.paymentStatus}
                     </span>
                     <span className="text-sm font-bold">${order.totalAmount.toFixed(2)}</span>
                   </div>

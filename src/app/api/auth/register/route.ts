@@ -7,7 +7,7 @@ const schema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   password: z.string().min(6),
-  role: z.enum(["BUYER", "SELLER"]).default("BUYER"),
+  role: z.literal("BUYER").default("BUYER"),
 });
 
 export async function POST(req: NextRequest) {
@@ -24,15 +24,6 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: { name, email, password: hashed, role },
     });
-
-    if (role === "SELLER") {
-      await prisma.store.create({
-        data: {
-          name: `${name}'s Store`,
-          ownerId: user.id,
-        },
-      });
-    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (err) {

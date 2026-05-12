@@ -5,7 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useCartStore } from "@/store/cart";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
-import { ShoppingCart, Search, Menu, X, User, LogOut, Package, Heart, Store, Shield, Settings } from "lucide-react";
+import { ShoppingCart, Search, Menu, X, User, LogOut, Package, Heart, Shield, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -126,17 +126,6 @@ export function Header() {
                       <Icon className="w-4 h-4 mr-2" /> {label}
                     </DropdownMenuItem>
                   ))}
-                  {(user?.role === "SELLER" || user?.role === "ADMIN") && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => router.push("/seller/dashboard")}
-                        className="cursor-pointer"
-                      >
-                        <Store className="w-4 h-4 mr-2" /> {t.header.sellerDashboard}
-                      </DropdownMenuItem>
-                    </>
-                  )}
                   {user?.role === "ADMIN" && (
                     <DropdownMenuItem
                       onClick={() => router.push("/admin/dashboard")}

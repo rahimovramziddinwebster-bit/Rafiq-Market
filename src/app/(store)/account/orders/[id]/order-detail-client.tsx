@@ -19,6 +19,7 @@ interface OrderItem {
 interface Order {
   id: string;
   status: string;
+  paymentStatus: string;
   totalAmount: number;
   createdAt: Date;
   paymentId: string | null;
@@ -123,6 +124,17 @@ export function OrderDetailClient({ order }: { order: Order }) {
             <p className="text-sm text-muted-foreground">
               {order.paymentId ? t.orders.paidByCard : t.orders.cashOnDelivery}
             </p>
+            <div className="mt-2">
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
+                order.paymentStatus === "PAID"
+                  ? "bg-green-100 text-green-800 border-green-200"
+                  : order.paymentStatus === "PARTIAL"
+                  ? "bg-orange-100 text-orange-800 border-orange-200"
+                  : "bg-red-100 text-red-800 border-red-200"
+              }`}>
+                {t.orders.paymentStatuses[order.paymentStatus as keyof typeof t.orders.paymentStatuses] ?? order.paymentStatus}
+              </span>
+            </div>
           </div>
 
           <div className="bg-card rounded-xl border border-border p-4">

@@ -10,12 +10,11 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { Eye, EyeOff, ShoppingBag, Store } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
-type FormData = { name: string; email: string; password: string; role: "BUYER" | "SELLER" };
+type FormData = { name: string; email: string; password: string };
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -29,17 +28,13 @@ export default function RegisterPage() {
         name: z.string().min(2, t.auth.nameTooShort),
         email: z.string().email(t.auth.invalidEmail),
         password: z.string().min(6, t.auth.passwordTooShort),
-        role: z.enum(["BUYER", "SELLER"]),
       }),
     [t]
   );
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { role: "BUYER" },
   });
-
-  const role = watch("role");
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -47,7 +42,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, role: "BUYER" }),
       });
 
       const body = await res.json();
@@ -63,7 +58,7 @@ export default function RegisterPage() {
         redirect: false,
       });
 
-      router.push(data.role === "SELLER" ? "/seller/dashboard" : "/");
+      router.push("/");
       router.refresh();
     } finally {
       setLoading(false);
@@ -84,32 +79,6 @@ export default function RegisterPage() {
 
         <div className="bg-card rounded-2xl border border-border shadow-sm p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Label className="mb-2 block">{t.auth.iWantTo}</Label>
-              <RadioGroup
-                value={role}
-                onValueChange={(v) => setValue("role", v as "BUYER" | "SELLER")}
-                className="grid grid-cols-2 gap-3"
-              >
-                <label className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition-colors has-[input:checked]:border-primary has-[input:checked]:bg-primary/5">
-                  <RadioGroupItem value="BUYER" id="buyer" className="sr-only" />
-                  <ShoppingBag className="w-6 h-6 text-primary" />
-                  <div className="text-center">
-                    <p className="text-sm font-medium">{t.auth.buy}</p>
-                    <p className="text-xs text-muted-foreground">{t.auth.buyDesc}</p>
-                  </div>
-                </label>
-                <label className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition-colors has-[input:checked]:border-primary has-[input:checked]:bg-primary/5">
-                  <RadioGroupItem value="SELLER" id="seller" className="sr-only" />
-                  <Store className="w-6 h-6 text-primary" />
-                  <div className="text-center">
-                    <p className="text-sm font-medium">{t.auth.sell}</p>
-                    <p className="text-xs text-muted-foreground">{t.auth.sellDesc}</p>
-                  </div>
-                </label>
-              </RadioGroup>
-            </div>
-
             <div>
               <Label htmlFor="name" className="mb-1.5 block">{t.auth.fullName}</Label>
               <Input id="name" {...register("name")} placeholder="John Doe" autoComplete="name" />

@@ -20,6 +20,12 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PAID
+  UNPAID
+  PARTIAL
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String?
@@ -165,10 +171,11 @@ model CartItem {
 model Order {
   id          String      @id @default(cuid())
   userId      String
-  status      OrderStatus @default(PENDING)
-  totalAmount Float
-  address     Json
-  paymentId   String?
+  status        OrderStatus   @default(PENDING)
+  paymentStatus PaymentStatus @default(UNPAID)
+  totalAmount   Float
+  address       Json
+  paymentId     String?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 

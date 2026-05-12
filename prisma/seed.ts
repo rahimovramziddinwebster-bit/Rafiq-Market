@@ -22,30 +22,6 @@ async function main() {
     },
   });
 
-  // Seller user 1
-  const sellerPassword = await bcrypt.hash("seller123", 12);
-  const seller1 = await prisma.user.upsert({
-    where: { email: "techstore@uzum.uz" },
-    update: {},
-    create: {
-      name: "Tech Store Owner",
-      email: "techstore@uzum.uz",
-      password: sellerPassword,
-      role: "SELLER",
-    },
-  });
-
-  const seller2 = await prisma.user.upsert({
-    where: { email: "fashionstore@uzum.uz" },
-    update: {},
-    create: {
-      name: "Fashion Store Owner",
-      email: "fashionstore@uzum.uz",
-      password: sellerPassword,
-      role: "SELLER",
-    },
-  });
-
   // Buyer user
   const buyerPassword = await bcrypt.hash("buyer123", 12);
   await prisma.user.upsert({
@@ -59,30 +35,20 @@ async function main() {
     },
   });
 
-  // Stores
+  // Single store owned by admin
   const store1 = await prisma.store.upsert({
-    where: { ownerId: seller1.id },
-    update: { logo: "/images/products/cat-electronics.jpg" },
+    where: { ownerId: admin.id },
+    update: { name: "Rafiqmarket Store" },
     create: {
-      name: "TechZone Uzbekistan",
-      description: "Best electronics store in Uzbekistan",
+      name: "Rafiqmarket Store",
+      description: "Official Rafiqmarket online store",
       logo: "/images/products/cat-electronics.jpg",
-      ownerId: seller1.id,
+      ownerId: admin.id,
       isVerified: true,
     },
   });
 
-  const store2 = await prisma.store.upsert({
-    where: { ownerId: seller2.id },
-    update: { logo: "/images/products/cat-clothing.jpg" },
-    create: {
-      name: "Fashion Hub",
-      description: "Trendy clothes and accessories",
-      logo: "/images/products/cat-clothing.jpg",
-      ownerId: seller2.id,
-      isVerified: true,
-    },
-  });
+  const store2 = store1; // single store, all products belong to admin
 
   // Categories
   const electronics = await prisma.category.upsert({
@@ -416,8 +382,6 @@ async function main() {
 
   console.log("Seeding completed!");
   console.log("Admin: admin@uzum.uz / admin123");
-  console.log("Seller 1: techstore@uzum.uz / seller123");
-  console.log("Seller 2: fashionstore@uzum.uz / seller123");
   console.log("Buyer: buyer@uzum.uz / buyer123");
 }
 

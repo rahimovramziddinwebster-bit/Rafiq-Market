@@ -71,14 +71,6 @@ export function HomeClient({ categories, trendingProducts, newArrivals }: HomeCl
                     {t.home.shopNow} <ArrowRight className="w-4 h-4 ml-2" />
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="border-white/40 text-white hover:bg-white/10 cursor-pointer"
-                >
-                  <Link href="/auth/register">{t.home.becomeSeller}</Link>
-                </Button>
               </div>
 
               {/* Trust badges */}

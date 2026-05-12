@@ -19,6 +19,5 @@ export default async function AdminOrdersPage() {
       _count: { select: { items: true } },
     },
   });
-
   return <AdminOrdersClient orders={orders} />;
 }
