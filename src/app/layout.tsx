@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
+import { SwRegister } from "@/components/sw-register";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -18,6 +19,20 @@ export const metadata: Metadata = {
   title: { default: "Rafiq — Shop Everything", template: "%s | Rafiq" },
   description:
     "Discover millions of products at the best prices on Rafiq, your trusted online marketplace.",
+  appleWebApp: {
+    capable: true,
+    title: "Rafiq",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/icons/icon-192.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7B1C1C",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
         <Providers>{children}</Providers>
         <Toaster position="top-right" richColors />
+        <SwRegister />
       </body>
     </html>
   );

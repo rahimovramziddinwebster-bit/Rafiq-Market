@@ -6,10 +6,6 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const role = req.nextauth.token?.role as string | undefined;
 
-    if (pathname.startsWith("/seller") && role !== "SELLER" && role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
-    }
-
     if (pathname.startsWith("/admin") && role !== "ADMIN") {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -22,7 +18,6 @@ export default withAuth(
         const { pathname } = req.nextUrl;
         if (
           pathname.startsWith("/account") ||
-          pathname.startsWith("/seller") ||
           pathname.startsWith("/admin") ||
           pathname.startsWith("/checkout")
         ) {
@@ -35,5 +30,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/account/:path*", "/seller/:path*", "/admin/:path*", "/checkout/:path*"],
+  matcher: ["/account/:path*", "/admin/:path*", "/checkout/:path*"],
 };

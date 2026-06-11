@@ -10,11 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
-import { CreditCard, Truck } from "lucide-react";
+import { Banknote, Truck } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export default function CheckoutPage() {
@@ -30,7 +29,6 @@ export default function CheckoutPage() {
         city: z.string().min(2, t.checkout.cityRequired),
         street: z.string().min(5, t.checkout.streetRequired),
         zip: z.string().min(4, t.checkout.zipRequired),
-        paymentMethod: z.enum(["stripe", "cod"]),
       }),
     [t]
   );
@@ -40,15 +38,10 @@ export default function CheckoutPage() {
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { paymentMethod: "stripe" },
   });
-
-  const paymentMethod = watch("paymentMethod");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -78,26 +71,15 @@ export default function CheckoutPage() {
         address,
       };
 
-      if (data.paymentMethod === "stripe") {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        const { url } = await res.json();
-        if (url && typeof window !== "undefined") window.location.href = url;
-      } else {
-        const res = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error();
-        clearCart();
-        toast.success(t.checkout.orderSuccess);
-        router.push("/account/orders");
-      }
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error();
+      clearCart();
+      toast.success(t.checkout.orderSuccess);
+      router.push("/account/orders");
     } catch {
       toast.error(t.checkout.orderError);
     } finally {
@@ -137,37 +119,18 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Payment Method */}
+            {/* Payment: cash on delivery only */}
             <div className="bg-card rounded-xl border border-border p-5">
               <h2 className="font-semibold text-base mb-4 flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-primary" /> {t.checkout.paymentMethod}
+                <Banknote className="w-4 h-4 text-primary" /> {t.checkout.paymentMethod}
               </h2>
-              <RadioGroup
-                value={paymentMethod}
-                onValueChange={(v) => setValue("paymentMethod", v as "stripe" | "cod")}
-                className="space-y-3"
-              >
-                <label className="flex items-center gap-3 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition-colors has-[input:checked]:border-primary has-[input:checked]:bg-primary/5">
-                  <RadioGroupItem value="stripe" id="stripe" />
-                  <div className="flex items-center gap-3 flex-1">
-                    <CreditCard className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">{t.checkout.creditCard}</p>
-                      <p className="text-xs text-muted-foreground">{t.checkout.creditCardDesc}</p>
-                    </div>
-                  </div>
-                </label>
-                <label className="flex items-center gap-3 p-4 rounded-xl border border-border cursor-pointer hover:border-primary transition-colors has-[input:checked]:border-primary has-[input:checked]:bg-primary/5">
-                  <RadioGroupItem value="cod" id="cod" />
-                  <div className="flex items-center gap-3 flex-1">
-                    <Truck className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="text-sm font-medium">{t.checkout.cashOnDelivery}</p>
-                      <p className="text-xs text-muted-foreground">{t.checkout.cashOnDeliveryDesc}</p>
-                    </div>
-                  </div>
-                </label>
-              </RadioGroup>
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-primary bg-primary/5">
+                <Banknote className="w-5 h-5 text-primary shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">{t.checkout.cashOnDelivery}</p>
+                  <p className="text-xs text-muted-foreground">{t.checkout.cashOnDeliveryDesc}</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -235,11 +198,7 @@ export default function CheckoutPage() {
                 className="w-full cursor-pointer font-semibold"
                 disabled={processing}
               >
-                {processing
-                  ? t.checkout.processing
-                  : paymentMethod === "stripe"
-                  ? t.checkout.payWithCard
-                  : t.checkout.placeOrder}
+                {processing ? t.checkout.processing : t.checkout.placeOrder}
               </Button>
             </div>
           </div>

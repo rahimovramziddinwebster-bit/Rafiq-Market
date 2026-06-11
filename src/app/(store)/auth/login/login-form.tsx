@@ -119,12 +119,6 @@ export function LoginForm() {
             </Link>
           </div>
 
-          <div className="mt-4 p-3 bg-muted/50 rounded-lg text-xs text-muted-foreground">
-            <p className="font-medium mb-1">{t.auth.demoAccounts}</p>
-            <p>Buyer: buyer@uzum.uz / buyer123</p>
-            <p>Seller: techstore@uzum.uz / seller123</p>
-            <p>Admin: admin@uzum.uz / admin123</p>
-          </div>
         </div>
       </div>
     </div>
