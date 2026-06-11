@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "uz.rafiq.market",
+        "sha256_cert_fingerprints": ["0B:B7:DC:5C:BC:2C:4D:7B:82:8D:8C:EF:D1:A6:76:3D:BC:AA:39:2F:D2:8C:5F:9B:19:B1:99:1A:78:46:13:8B"]
+      }
+    }]

@@ -44,3 +44,6 @@ next-env.d.ts
 /src/generated/prisma
 
 .vercel
+
+# Android signing keys and builds - do not commit
+/android/
