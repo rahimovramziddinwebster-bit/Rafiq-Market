@@ -45,6 +45,7 @@ export interface CartItemLocal {
     name: string;
     value: string;
     priceModifier: number;
+    stock: number;
   };
 }
 

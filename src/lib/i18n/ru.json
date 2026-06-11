@@ -168,7 +168,11 @@
   "wishlist": {
     "title": "Избранное",
     "empty": "Список желаний пуст.",
-    "browseProducts": "Смотреть товары →"
+    "browseProducts": "Смотреть товары →",
+    "signInToSave": "Войдите, чтобы добавить в избранное",
+    "added": "Добавлено в избранное",
+    "removed": "Удалено из избранного",
+    "error": "Не удалось обновить избранное"
   },
   "addresses": {
     "pageTitle": "Адреса доставки",
@@ -254,7 +258,7 @@
   "productDetail": {
     "home": "Главная",
     "products": "Товары",
-    "verifiedStore": "Verified Store",
+    "verifiedStore": "Проверенный магазин",
     "reviews": "отзывов",
     "save": "Экономия:",
     "officialStore": "Официальный магазин",
@@ -381,6 +385,14 @@
     "markUnpaid": "Не оплачен",
     "paymentUpdated": "Статус оплаты обновлён",
     "paymentUpdateFailed": "Не удалось обновить",
+    "statusUpdated": "Статус обновлён:",
+    "statusUpdateFailed": "Не удалось обновить статус",
+    "ordersSearch": "Поиск по ID, имени или email...",
+    "allStatuses": "Все статусы",
+    "allPayments": "Все оплаты",
+    "noOrdersFound": "Заказы не найдены",
+    "backToOrders": "Назад к заказам",
+    "subtotal": "Сумма товаров",
     "orderCol": "Заказ",
     "customerCol": "Покупатель",
     "amountCol": "Сумма",

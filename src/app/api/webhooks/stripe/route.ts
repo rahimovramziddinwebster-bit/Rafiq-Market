@@ -7,7 +7,8 @@ export async function POST(req: NextRequest) {
   if (!stripe) return NextResponse.json({ error: "Payment not configured" }, { status: 503 });
 
   const body = await req.text();
-  const sig = req.headers.get("stripe-signature")!;
+  const sig = req.headers.get("stripe-signature");
+  if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
 
   let event: Stripe.Event;
   try {
@@ -18,30 +19,48 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { userId, address } = session.metadata!;
+    const orderId = session.metadata?.orderId;
+    const userId = session.metadata?.userId;
 
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
+    if (!orderId || !userId) {
+      // Session not created by our checkout — acknowledge and skip
+      return NextResponse.json({ received: true });
+    }
 
-    const totalAmount = (session.amount_total ?? 0) / 100;
-
-    await prisma.order.create({
-      data: {
-        userId,
-        status: "PAID",
-        totalAmount,
-        address: JSON.parse(address),
-        paymentId: session.payment_intent as string,
-        items: {
-          create: lineItems.data.map((item) => ({
-            productId: item.description ?? "",
-            quantity: item.quantity ?? 1,
-            price: (item.amount_total ?? 0) / 100,
-          })),
+    try {
+      // Guard against webhook retries: only the first event flips the order to paid
+      const updated = await prisma.order.updateMany({
+        where: { id: orderId, paymentStatus: "UNPAID" },
+        data: {
+          status: "PAID",
+          paymentStatus: "PAID",
+          paymentId: (session.payment_intent as string) ?? null,
         },
-      },
-    });
+      });
 
-    await prisma.cart.deleteMany({ where: { userId } });
+      if (updated.count > 0) {
+        const order = await prisma.order.findUnique({
+          where: { id: orderId },
+          include: { items: true },
+        });
+
+        if (order) {
+          await prisma.$transaction(
+            order.items.map((item) =>
+              prisma.product.updateMany({
+                where: { id: item.productId, stock: { gte: item.quantity } },
+                data: { stock: { decrement: item.quantity } },
+              })
+            )
+          );
+        }
+
+        await prisma.cart.deleteMany({ where: { userId } });
+      }
+    } catch (err) {
+      console.error("Stripe webhook processing failed:", err);
+      return NextResponse.json({ error: "Processing failed" }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ received: true });

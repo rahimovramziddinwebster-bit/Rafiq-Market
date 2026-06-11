@@ -20,7 +20,7 @@ export function AdminStoresClient({ stores }: { stores: StoreEntry[] }) {
     <div>
       <h1 className="text-xl font-bold mb-6">{t.admin.storesTitle} ({stores.length})</h1>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b border-border">
             <tr>

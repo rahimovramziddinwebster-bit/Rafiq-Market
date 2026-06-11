@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Heart, ShoppingCart, Star, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cart";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Product {
   id: string;
@@ -29,6 +33,11 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem);
+  const { status } = useSession();
+  const router = useRouter();
+  const t = useT();
+  const [wishlisted, setWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const discount =
     product.discountPrice && product.price > 0
@@ -54,7 +63,37 @@ export function ProductCard({ product, className }: ProductCardProps) {
         stock: product.stock,
       },
     });
-    toast.success("Added to cart!", { description: product.title });
+    toast.success(t.productDetail.addedToCart, { description: product.title });
+  }
+
+  async function handleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (status !== "authenticated") {
+      toast.info(t.wishlist.signInToSave);
+      router.push("/auth/login?callbackUrl=/products/" + product.slug);
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      const res = await fetch("/api/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product.id }),
+      });
+      if (!res.ok) throw new Error();
+      const { wishlisted: isWishlisted } = await res.json();
+      setWishlisted(isWishlisted);
+      toast.success(isWishlisted ? t.wishlist.added : t.wishlist.removed, {
+        description: product.title,
+      });
+    } catch {
+      toast.error(t.wishlist.error);
+    } finally {
+      setWishlistLoading(false);
+    }
   }
 
   return (
@@ -82,19 +121,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
               <span className="text-white text-sm font-semibold bg-black/60 px-3 py-1 rounded-full">
-                Out of stock
+                {t.home.outOfStock}
               </span>
             </div>
           )}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              toast.info("Sign in to save to wishlist");
-            }}
-            className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-white z-10"
+            onClick={handleWishlist}
+            disabled={wishlistLoading}
+            className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-white z-10 disabled:opacity-50"
             aria-label="Add to wishlist"
           >
-            <Heart className="w-4 h-4 text-gray-500 hover:text-red-500 transition-colors" />
+            <Heart
+              className={cn(
+                "w-4 h-4 transition-colors",
+                wishlisted ? "fill-red-500 text-red-500" : "text-gray-500 hover:text-red-500"
+              )}
+            />
           </button>
         </div>
 

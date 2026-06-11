@@ -31,7 +31,19 @@ export async function POST(req: NextRequest) {
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const userId = (session.user as { id: string }).id;
-  const { productId } = await req.json();
+  const { productId } = await req.json().catch(() => ({}));
+
+  if (!productId || typeof productId !== "string") {
+    return NextResponse.json({ error: "productId is required" }, { status: 400 });
+  }
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    select: { id: true },
+  });
+  if (!product) {
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+  }
 
   const existing = await prisma.wishlist.findUnique({
     where: { userId_productId: { userId, productId } },

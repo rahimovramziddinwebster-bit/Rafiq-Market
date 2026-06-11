@@ -168,7 +168,11 @@
   "wishlist": {
     "title": "Sevimlilar",
     "empty": "Sevimlilar ro'yxati bo'sh.",
-    "browseProducts": "Mahsulotlarni ko'rish →"
+    "browseProducts": "Mahsulotlarni ko'rish →",
+    "signInToSave": "Sevimlilarga qo'shish uchun tizimga kiring",
+    "added": "Sevimlilarga qo'shildi",
+    "removed": "Sevimlilardan olib tashlandi",
+    "error": "Sevimlilarni yangilab bo'lmadi"
   },
   "addresses": {
     "pageTitle": "Yetkazib berish manzillari",
@@ -381,6 +385,14 @@
     "markUnpaid": "To'lanmagan",
     "paymentUpdated": "To'lov holati yangilandi",
     "paymentUpdateFailed": "Yangilab bo'lmadi",
+    "statusUpdated": "Holat yangilandi:",
+    "statusUpdateFailed": "Holatni yangilab bo'lmadi",
+    "ordersSearch": "Buyurtma ID, mijoz ismi yoki email bo'yicha qidirish...",
+    "allStatuses": "Barcha holatlar",
+    "allPayments": "Barcha to'lovlar",
+    "noOrdersFound": "Hech qanday buyurtma topilmadi",
+    "backToOrders": "Buyurtmalar ro'yxatiga qaytish",
+    "subtotal": "Mahsulotlar summasi",
     "orderCol": "Buyurtma",
     "customerCol": "Mijoz",
     "amountCol": "Miqdor",

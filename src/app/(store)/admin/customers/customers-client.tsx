@@ -54,7 +54,7 @@ export function CustomersClient({ customers: initial }: { customers: Customer[] 
         )}
       </div>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
@@ -77,7 +77,7 @@ export function CustomersClient({ customers: initial }: { customers: Customer[] 
             {customers.map((c) => (
               <tr key={c.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-3">
-                  <p className="font-medium">{c.name ?? "—"}</p>
+                  <p className="font-medium">{c.name ?? "вЂ”"}</p>
                   <p className="text-xs text-muted-foreground">{c.email}</p>
                 </td>
                 <td className="px-4 py-3 text-center hidden sm:table-cell">{c.totalOrders}</td>

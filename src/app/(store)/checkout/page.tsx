@@ -12,13 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { CreditCard, Truck } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export default function CheckoutPage() {
-  const { data: session } = useSession();
+  const { status } = useSession();
   const { items, totalPrice, clearCart } = useCartStore();
   const router = useRouter();
   const [processing, setProcessing] = useState(false);
@@ -50,15 +50,15 @@ export default function CheckoutPage() {
 
   const paymentMethod = watch("paymentMethod");
 
-  if (!session) {
-    router.push("/auth/login?callbackUrl=/checkout");
-    return null;
-  }
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login?callbackUrl=/checkout");
+    } else if (status === "authenticated" && items.length === 0 && !processing) {
+      router.push("/cart");
+    }
+  }, [status, items.length, processing, router]);
 
-  if (items.length === 0) {
-    router.push("/cart");
-    return null;
-  }
+  if (status !== "authenticated" || items.length === 0) return null;
 
   const subtotal = totalPrice();
   const shipping = subtotal >= 50 ? 0 : 5.99;
@@ -69,34 +69,29 @@ export default function CheckoutPage() {
     try {
       const address = { city: data.city, street: data.street, zip: data.zip };
 
+      const payload = {
+        items: items.map((i) => ({
+          productId: i.productId,
+          variantId: i.variantId ?? null,
+          quantity: i.quantity,
+        })),
+        address,
+      };
+
       if (data.paymentMethod === "stripe") {
         const res = await fetch("/api/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items: items.map((i) => ({
-              product: { title: i.product.title, images: i.product.images },
-              quantity: i.quantity,
-              price: (i.product.discountPrice ?? i.product.price) + (i.variant?.priceModifier ?? 0),
-            })),
-            address,
-          }),
+          body: JSON.stringify(payload),
         });
+        if (!res.ok) throw new Error();
         const { url } = await res.json();
         if (url && typeof window !== "undefined") window.location.href = url;
       } else {
         const res = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items: items.map((i) => ({
-              productId: i.productId,
-              quantity: i.quantity,
-              price: (i.product.discountPrice ?? i.product.price) + (i.variant?.priceModifier ?? 0),
-            })),
-            address,
-            totalAmount: total,
-          }),
+          body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error();
         clearCart();

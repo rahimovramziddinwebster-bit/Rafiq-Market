@@ -125,7 +125,7 @@ export default async function ProductDetailPage({
             )}
           </div>
           {product.images.length > 1 && (
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
               {product.images.slice(0, 5).map((img, i) => (
                 <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 border-2 border-primary/30 cursor-pointer hover:border-primary transition-colors">
                   <Image src={img} alt={`${product.title} ${i + 1}`} fill className="object-cover" />

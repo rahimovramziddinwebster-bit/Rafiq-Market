@@ -3,6 +3,7 @@ import { ProductCard } from "@/components/product-card";
 import { ProductGridSkeleton } from "@/components/product-skeleton";
 import { Suspense } from "react";
 import { ProductFilters } from "./product-filters";
+import { MobileFilters } from "./mobile-filters";
 import { ProductSort } from "./product-sort";
 import { ProductPagination } from "./product-pagination";
 import { ProductsBreadcrumb } from "./products-breadcrumb";
@@ -108,6 +109,9 @@ export default async function ProductsPage({
         </aside>
 
         <div className="flex-1 min-w-0">
+          <div className="lg:hidden mb-3">
+            <MobileFilters categories={categories} searchParams={params} />
+          </div>
           <Suspense fallback={<ProductGridSkeleton count={20} />}>
             <ProductList searchParams={params} />
           </Suspense>

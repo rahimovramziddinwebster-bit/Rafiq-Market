@@ -33,7 +33,7 @@ export function ProductSort({ current }: { current: string }) {
 
   return (
     <Select value={current} onValueChange={handleSort}>
-      <SelectTrigger className="w-48 h-8 text-sm cursor-pointer">
+      <SelectTrigger className="w-36 sm:w-48 h-8 text-sm cursor-pointer">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

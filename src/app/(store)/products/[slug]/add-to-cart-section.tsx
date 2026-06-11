@@ -64,6 +64,7 @@ export function AddToCartSection({ product }: { product: Product }) {
             name: selectedVariant.name,
             value: selectedVariant.value,
             priceModifier: selectedVariant.priceModifier,
+            stock: selectedVariant.stock,
           }
         : undefined,
     });

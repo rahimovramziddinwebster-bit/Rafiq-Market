@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useT } from "@/lib/i18n";
-import { DollarSign, Users, Clock, AlertCircle, TrendingUp } from "lucide-react";
+import { DollarSign, Users, Clock, AlertCircle, TrendingUp, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 
 interface Order {
@@ -82,9 +83,18 @@ export function AdminDashboardClient({ totalRevenue, totalCustomers, pendingOrde
       </div>
 
       <div className="bg-card rounded-xl border border-border p-5">
-        <h2 className="font-semibold flex items-center gap-2 mb-4">
-          <TrendingUp className="w-4 h-4 text-primary" /> {t.admin.recentOrders}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary" /> {t.admin.recentOrders}
+          </h2>
+          <Link
+            href="/admin/orders"
+            className="text-xs text-primary hover:underline flex items-center gap-1"
+          >
+            {t.seller.viewAll}
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="text-muted-foreground">
@@ -98,8 +108,15 @@ export function AdminDashboardClient({ totalRevenue, totalCustomers, pendingOrde
             </thead>
             <tbody>
               {recentOrders.map((o) => (
-                <tr key={o.id} className="border-t border-border">
-                  <td className="py-3 font-mono text-xs text-muted-foreground">#{o.id.slice(-8).toUpperCase()}</td>
+                <tr key={o.id} className="border-t border-border hover:bg-muted/20 transition-colors">
+                  <td className="py-3 font-mono text-xs">
+                    <Link
+                      href={`/admin/orders/${o.id}`}
+                      className="text-muted-foreground hover:text-primary hover:underline"
+                    >
+                      #{o.id.slice(-8).toUpperCase()}
+                    </Link>
+                  </td>
                   <td className="py-3 hidden md:table-cell">
                     <p className="font-medium">{o.user.name}</p>
                     <p className="text-xs text-muted-foreground">{o.user.email}</p>

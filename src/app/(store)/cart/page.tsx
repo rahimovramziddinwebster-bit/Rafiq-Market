@@ -90,7 +90,7 @@ export default function CartPage() {
                       </span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
-                        disabled={item.quantity >= item.product.stock}
+                        disabled={item.quantity >= (item.variant?.stock ?? item.product.stock)}
                         className="px-2.5 py-1.5 hover:bg-muted transition-colors cursor-pointer disabled:opacity-50"
                         aria-label="Increase"
                       >

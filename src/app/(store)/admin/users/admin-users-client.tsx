@@ -26,7 +26,7 @@ export function AdminUsersClient({ users }: { users: User[] }) {
     <div>
       <h1 className="text-xl font-bold mb-6">{t.admin.usersTitle} ({users.length})</h1>
 
-      <div className="bg-card rounded-xl border border-border overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
@@ -41,7 +41,7 @@ export function AdminUsersClient({ users }: { users: User[] }) {
               <tr key={u.id} className="border-b border-border last:border-0 hover:bg-muted/20 transition-colors">
                 <td className="px-4 py-3">
                   <div>
-                    <p className="font-medium">{u.name ?? "—"}</p>
+                    <p className="font-medium">{u.name ?? "вЂ”"}</p>
                     <p className="text-xs text-muted-foreground">{u.email}</p>
                   </div>
                 </td>

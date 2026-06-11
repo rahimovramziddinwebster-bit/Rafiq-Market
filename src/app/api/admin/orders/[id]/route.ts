@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
 const schema = z.object({
-  paymentStatus: z.enum(["PAID", "UNPAID", "PARTIAL"]),
+  status: z.enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"]),
 });
 
 export async function PATCH(
@@ -18,11 +18,11 @@ export async function PATCH(
 
   const { id } = await params;
   const parsed = schema.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "Invalid payment status" }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
 
   const order = await prisma.order.update({
     where: { id },
-    data: { paymentStatus: parsed.data.paymentStatus },
+    data: { status: parsed.data.status },
   });
 
   return NextResponse.json(order);
