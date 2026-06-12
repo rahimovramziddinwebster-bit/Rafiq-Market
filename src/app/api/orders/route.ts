@@ -17,7 +17,7 @@ const orderSchema = z.object({
   address: z.object({
     city: z.string().min(1),
     street: z.string().min(1),
-    zip: z.string().min(1),
+    zip: z.string().optional(),
   }),
 });
 

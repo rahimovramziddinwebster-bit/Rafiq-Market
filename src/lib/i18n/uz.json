@@ -429,7 +429,21 @@
     "cancel": "Bekor qilish",
     "addCategory": "Kategoriya qo'shish",
     "categoryCreated": "Kategoriya yaratildi!",
-    "categoryCreateFailed": "Kategoriya yaratib bo'lmadi"
+    "categoryCreateFailed": "Kategoriya yaratib bo'lmadi",
+    "editCategory": "Kategoriyani tahrirlash",
+    "imageUploadFailed": "Rasm yuklashda xatolik",
+    "catImage": "Kategoriya rasmi",
+    "changeImage": "Rasmni almashtirish",
+    "uploadImage": "Rasm yuklash",
+    "removeImage": "Rasmni olib tashlash",
+    "uploading": "Yuklanmoqda...",
+    "save": "Saqlash",
+    "categoryUpdated": "Kategoriya yangilandi!",
+    "categoryUpdateFailed": "Kategoriyani yangilab bo'lmadi",
+    "deleteCategory": "Kategoriyani o'chirish",
+    "categoryDeleted": "Kategoriya o'chirildi",
+    "categoryDeleteFailed": "Kategoriyani o'chirib bo'lmadi",
+    "categoryNotEmpty": "O'chirib bo'lmaydi: kategoriyada mahsulotlar yoki ichki kategoriyalar bor"
   },
   "footer": {
     "description": "O'zbekistonning yetakchi onlayn do'koni. Millionlab mahsulotlarni tez yetkazib berish bilan xarid qiling.",

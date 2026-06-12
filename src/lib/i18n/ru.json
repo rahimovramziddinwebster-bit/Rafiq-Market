@@ -429,7 +429,21 @@
     "cancel": "Отмена",
     "addCategory": "Добавить категорию",
     "categoryCreated": "Категория создана!",
-    "categoryCreateFailed": "Не удалось создать категорию"
+    "categoryCreateFailed": "Не удалось создать категорию",
+    "editCategory": "Редактировать категорию",
+    "imageUploadFailed": "Ошибка загрузки фото",
+    "catImage": "Фото категории",
+    "changeImage": "Заменить фото",
+    "uploadImage": "Загрузить фото",
+    "removeImage": "Убрать фото",
+    "uploading": "Загрузка...",
+    "save": "Сохранить",
+    "categoryUpdated": "Категория обновлена!",
+    "categoryUpdateFailed": "Не удалось обновить категорию",
+    "deleteCategory": "Удалить категорию",
+    "categoryDeleted": "Категория удалена",
+    "categoryDeleteFailed": "Не удалось удалить категорию",
+    "categoryNotEmpty": "Нельзя удалить: в категории есть товары или подкатегории"
   },
   "footer": {
     "description": "Ведущий онлайн-маркетплейс Узбекистана. Миллионы товаров с быстрой доставкой.",

@@ -56,7 +56,7 @@ export interface OrderWithItems {
   address: {
     city: string;
     street: string;
-    zip: string;
+    zip?: string;
   };
   createdAt: Date;
   items: Array<{

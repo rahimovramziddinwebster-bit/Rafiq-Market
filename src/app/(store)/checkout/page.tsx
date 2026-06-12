@@ -28,7 +28,6 @@ export default function CheckoutPage() {
       z.object({
         city: z.string().min(2, t.checkout.cityRequired),
         street: z.string().min(5, t.checkout.streetRequired),
-        zip: z.string().min(4, t.checkout.zipRequired),
       }),
     [t]
   );
@@ -60,7 +59,7 @@ export default function CheckoutPage() {
   const onSubmit = async (data: FormData) => {
     setProcessing(true);
     try {
-      const address = { city: data.city, street: data.street, zip: data.zip };
+      const address = { city: data.city, street: data.street };
 
       const payload = {
         items: items.map((i) => ({
@@ -110,11 +109,6 @@ export default function CheckoutPage() {
                   <Label htmlFor="city" className="mb-1.5 block text-sm">{t.checkout.city}</Label>
                   <Input id="city" {...register("city")} placeholder={t.checkout.cityPlaceholder} />
                   {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="zip" className="mb-1.5 block text-sm">{t.checkout.zipCode}</Label>
-                  <Input id="zip" {...register("zip")} placeholder={t.checkout.zipPlaceholder} />
-                  {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip.message}</p>}
                 </div>
               </div>
             </div>

@@ -28,7 +28,7 @@ export default async function OrderDetailPage({
 
   if (!order) notFound();
 
-  const address = order.address as { city: string; street: string; zip: string };
+  const address = order.address as { city: string; street: string; zip?: string };
 
   return (
     <OrderDetailClient

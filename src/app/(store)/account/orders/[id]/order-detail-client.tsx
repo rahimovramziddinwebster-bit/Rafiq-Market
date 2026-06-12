@@ -23,7 +23,7 @@ interface Order {
   totalAmount: number;
   createdAt: Date;
   paymentId: string | null;
-  address: { city: string; street: string; zip: string };
+  address: { city: string; street: string; zip?: string };
   items: OrderItem[];
 }
 
@@ -114,7 +114,9 @@ export function OrderDetailClient({ order }: { order: Order }) {
               <Truck className="w-4 h-4 text-primary" /> {t.orders.shippingAddress}
             </h3>
             <p className="text-sm text-muted-foreground">{address.street}</p>
-            <p className="text-sm text-muted-foreground">{address.city}, {address.zip}</p>
+            <p className="text-sm text-muted-foreground">
+              {[address.city, address.zip].filter(Boolean).join(", ")}
+            </p>
           </div>
 
           <div className="bg-card rounded-xl border border-border p-4">
