@@ -6,11 +6,21 @@ import "dotenv/config";
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
+function requiredPassword(envVar: string) {
+  const value = process.env[envVar];
+  if (!value || value.length < 12) {
+    throw new Error(
+      `${envVar} must be set to a password of at least 12 characters before seeding`
+    );
+  }
+  return value;
+}
+
 async function main() {
   console.log("Seeding database...");
 
   // Admin user
-  const adminPassword = await bcrypt.hash("admin123", 12);
+  const adminPassword = await bcrypt.hash(requiredPassword("SEED_ADMIN_PASSWORD"), 12);
   const admin = await prisma.user.upsert({
     where: { email: "admin@uzum.uz" },
     update: {},
@@ -23,7 +33,7 @@ async function main() {
   });
 
   // Buyer user
-  const buyerPassword = await bcrypt.hash("buyer123", 12);
+  const buyerPassword = await bcrypt.hash(requiredPassword("SEED_BUYER_PASSWORD"), 12);
   await prisma.user.upsert({
     where: { email: "buyer@uzum.uz" },
     update: {},
@@ -381,8 +391,8 @@ async function main() {
   }
 
   console.log("Seeding completed!");
-  console.log("Admin: admin@uzum.uz / admin123");
-  console.log("Buyer: buyer@uzum.uz / buyer123");
+  console.log("Admin: admin@uzum.uz (password from SEED_ADMIN_PASSWORD)");
+  console.log("Buyer: buyer@uzum.uz (password from SEED_BUYER_PASSWORD)");
 }
 
 main()
