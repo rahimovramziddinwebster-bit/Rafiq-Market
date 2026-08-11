@@ -50,7 +50,7 @@ export default async function CategoryPage({
       take: 40,
       include: { store: { select: { name: true, isVerified: true } } },
     });
-  } catch (e) {
+  } catch {
     if (!category) notFound();
     // DB error after category found — show empty products
   }

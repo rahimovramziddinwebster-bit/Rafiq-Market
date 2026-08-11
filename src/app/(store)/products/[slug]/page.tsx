@@ -82,7 +82,7 @@ export default async function ProductDetailPage({
       take: 4,
       include: { store: { select: { name: true, isVerified: true } } },
     });
-  } catch (e) {
+  } catch {
     if (!product) notFound();
   }
 

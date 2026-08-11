@@ -59,8 +59,11 @@ export async function POST(req: NextRequest) {
 
   const userId = (session!.user as { id: string }).id;
   const store = await getAdminStore(userId);
-  const body = productSchema.parse(await req.json());
-  const { variants, ...productData } = body;
+  const parsed = productSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+  const { variants, ...productData } = parsed.data;
 
   const product = await prisma.product.create({
     data: {

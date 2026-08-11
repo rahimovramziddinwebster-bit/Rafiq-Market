@@ -5,7 +5,8 @@ import { cloudinary } from "@/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const role = (session?.user as { role?: string } | undefined)?.role;
+  if (role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   if (
     !process.env.CLOUDINARY_CLOUD_NAME ||

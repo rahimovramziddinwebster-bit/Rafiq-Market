@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useT } from "@/lib/i18n";
 import { DollarSign, Users, Clock, AlertCircle, TrendingUp, ArrowRight } from "lucide-react";
-import { format } from "date-fns";
 
 interface Order {
   id: string;

@@ -20,10 +20,48 @@ export async function PATCH(
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
 
-  const order = await prisma.order.update({
-    where: { id },
-    data: { status: parsed.data.status },
-  });
+  const newStatus = parsed.data.status;
 
-  return NextResponse.json(order);
+  try {
+    const order = await prisma.$transaction(async (tx) => {
+      const existing = await tx.order.findUnique({
+        where: { id },
+        include: { items: true },
+      });
+      if (!existing) throw new Error("NOT_FOUND");
+
+      // Stock was decremented at checkout; cancelling returns it, un-cancelling takes it again
+      if (newStatus === "CANCELLED" && existing.status !== "CANCELLED") {
+        for (const item of existing.items) {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } },
+          });
+        }
+      } else if (existing.status === "CANCELLED" && newStatus !== "CANCELLED") {
+        for (const item of existing.items) {
+          const res = await tx.product.updateMany({
+            where: { id: item.productId, stock: { gte: item.quantity } },
+            data: { stock: { decrement: item.quantity } },
+          });
+          if (res.count === 0) throw new Error("INSUFFICIENT_STOCK");
+        }
+      }
+
+      return tx.order.update({
+        where: { id },
+        data: { status: newStatus },
+      });
+    });
+
+    return NextResponse.json(order);
+  } catch (err) {
+    if (err instanceof Error && err.message === "NOT_FOUND") {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+    if (err instanceof Error && err.message === "INSUFFICIENT_STOCK") {
+      return NextResponse.json({ error: "Insufficient stock to restore order" }, { status: 409 });
+    }
+    throw err;
+  }
 }

@@ -2,8 +2,6 @@
 
 import { useT } from "@/lib/i18n";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { format } from "date-fns";
 
 interface Customer {
@@ -38,7 +36,6 @@ function UnpaidBadge({ amount }: { amount: number }) {
 
 export function CustomersClient({ customers: initial }: { customers: Customer[] }) {
   const t = useT();
-  const router = useRouter();
   const [customers] = useState(initial);
 
   const totalUnpaid = customers.reduce((s, c) => s + c.unpaidAmount, 0);

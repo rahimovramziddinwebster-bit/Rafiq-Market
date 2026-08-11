@@ -3,14 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") ?? "1");
-  const limit = parseInt(searchParams.get("limit") ?? "20");
+
+  const toNumber = (value: string | null, fallback: number) => {
+    const n = Number(value);
+    return value !== null && Number.isFinite(n) ? n : fallback;
+  };
+
+  const page = Math.max(1, Math.trunc(toNumber(searchParams.get("page"), 1)));
+  const limit = Math.min(100, Math.max(1, Math.trunc(toNumber(searchParams.get("limit"), 20))));
   const category = searchParams.get("category");
   const search = searchParams.get("q");
   const sort = searchParams.get("sort") ?? "newest";
-  const minPrice = parseFloat(searchParams.get("minPrice") ?? "0");
-  const maxPrice = parseFloat(searchParams.get("maxPrice") ?? "999999999");
-  const rating = parseFloat(searchParams.get("rating") ?? "0");
+  const minPrice = Math.max(0, toNumber(searchParams.get("minPrice"), 0));
+  const maxPrice = Math.max(minPrice, toNumber(searchParams.get("maxPrice"), 999999999));
+  const rating = toNumber(searchParams.get("rating"), 0);
   const inStock = searchParams.get("inStock") === "true";
 
   const where = {
